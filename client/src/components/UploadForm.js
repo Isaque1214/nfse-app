@@ -15,11 +15,17 @@ function UploadForm() {
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    axios.get('/api/empresas').then((response) => {
-      setEmpresas(response.data);
-    }).catch(() => {
-      setStatusLog([{ linha: 0, status: 'Erro', erro: 'Falha ao carregar empresas' }]);
-    });
+    axios
+      .get('/api/empresas')
+      .then((response) => {
+        const filteredEmpresas = response.data.filter(
+          (e) => e.municipio === 'São José' || e.municipio === 'Biguaçu'
+        );
+        setEmpresas(filteredEmpresas);
+      })
+      .catch(() => {
+        setStatusLog([{ linha: 0, status: 'Erro', erro: 'Falha ao carregar empresas' }]);
+      });
   }, []);
 
   useEffect(() => {
@@ -73,10 +79,10 @@ function UploadForm() {
   };
 
   return (
-    <div>
+    <div style={{ color: 'white' }}>
       <h2>Emissão de Notas</h2>
       <input type="file" onChange={handleFileUpload} accept=".xlsx" disabled={isProcessing} />
-      <table style={{ border: '1px solid black', margin: '10px 0' }}>
+      <table style={{ border: '1px solid white', margin: '10px 0', color: 'white' }}>
         <thead>
           <tr>
             <th>Atleta</th>
@@ -105,27 +111,37 @@ function UploadForm() {
           value={empresa}
           onChange={(e) => setEmpresa(e.target.value)}
           disabled={isProcessing}
+          style={{ padding: '5px', margin: '5px 0' }}
         >
           <option value="">Escolha uma empresa</option>
           {empresas.map((e) => (
-            <option key={e.nome_empresa} value={e.nome_empresa}>{e.nome_empresa}</option>
+            <option key={e.nome_empresa} value={e.nome_empresa}>
+              {e.nome_empresa}
+            </option>
           ))}
         </select>
-        <input value={municipio} readOnly placeholder="Município" />
-        <input value={login} readOnly placeholder="Login" />
-        <input type="password" value={senha} readOnly placeholder="Senha" />
+        <input value={municipio} readOnly placeholder="Município" style={{ margin: '5px 0' }} />
+        <input value={login} readOnly placeholder="Login" style={{ margin: '5px 0' }} />
+        <input
+          type="password"
+          value={senha}
+          readOnly
+          placeholder="Senha"
+          style={{ margin: '5px 0' }}
+        />
         <textarea
           placeholder="Descrição (ex.: Mensalidade)"
           value={descricao}
           onChange={(e) => setDescricao(e.target.value)}
           disabled={isProcessing}
+          style={{ margin: '5px 0', height: '60px' }}
         />
-        <button type="submit" disabled={isProcessing}>
+        <button type="submit" disabled={isProcessing} style={{ margin: '5px 0' }}>
           {isProcessing ? 'Processando...' : 'Emitir Notas'}
         </button>
       </form>
       <h3>Status</h3>
-      <div style={{ border: '1px solid black', padding: '10px' }}>
+      <div style={{ border: '1px solid white', padding: '10px', color: 'white' }}>
         {statusLog.map((log, index) => (
           <div key={index}>
             Linha {log.linha} - {log.status}: {log.erro || 'Sucesso'}
