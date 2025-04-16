@@ -1,47 +1,16 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import axios from 'axios';
 import * as XLSX from 'xlsx';
 
 function UploadForm() {
   const [excelFile, setExcelFile] = useState(null);
-  const [empresa, setEmpresa] = useState('');
   const [municipio, setMunicipio] = useState('');
   const [login, setLogin] = useState('');
   const [senha, setSenha] = useState('');
   const [descricao, setDescricao] = useState('');
   const [statusLog, setStatusLog] = useState([]);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [empresas, setEmpresas] = useState([]);
   const [data, setData] = useState([]);
-
-  useEffect(() => {
-    axios
-      .get('/api/empresas')
-      .then((response) => {
-        const filteredEmpresas = response.data.filter(
-          (e) => e.municipio === 'São José' || e.municipio === 'Biguaçu'
-        );
-        setEmpresas(filteredEmpresas);
-      })
-      .catch(() => {
-        setStatusLog([{ linha: 0, status: 'Erro', erro: 'Falha ao carregar empresas' }]);
-      });
-  }, []);
-
-  useEffect(() => {
-    if (empresa) {
-      const selected = empresas.find((e) => e.nome_empresa === empresa);
-      if (selected) {
-        setMunicipio(selected.municipio || '');
-        setLogin(selected.login || '');
-        setSenha(selected.senha || '');
-      }
-    } else {
-      setMunicipio('');
-      setLogin('');
-      setSenha('');
-    }
-  }, [empresa, empresas]);
 
   const handleFileUpload = (e) => {
     const file = e.target.files[0];
@@ -107,36 +76,36 @@ function UploadForm() {
         </tbody>
       </table>
       <form onSubmit={handleSubmit}>
-        <select
-          value={empresa}
-          onChange={(e) => setEmpresa(e.target.value)}
+        <input
+          value={municipio}
+          onChange={(e) => setMunicipio(e.target.value)}
+          placeholder="Município (ex.: São José)"
           disabled={isProcessing}
           style={{ padding: '5px', margin: '5px 0' }}
-        >
-          <option value="">Escolha uma empresa</option>
-          {empresas.map((e) => (
-            <option key={e.nome_empresa} value={e.nome_empresa}>
-              {e.nome_empresa}
-            </option>
-          ))}
-        </select>
-        <input value={municipio} readOnly placeholder="Município" style={{ margin: '5px 0' }} />
-        <input value={login} readOnly placeholder="Login" style={{ margin: '5px 0' }} />
+        />
+        <input
+          value={login}
+          onChange={(e) => setLogin(e.target.value)}
+          placeholder="Login"
+          disabled={isProcessing}
+          style={{ padding: '5px', margin: '5px 0' }}
+        />
         <input
           type="password"
           value={senha}
-          readOnly
+          onChange={(e) => setSenha(e.target.value)}
           placeholder="Senha"
-          style={{ margin: '5px 0' }}
+          disabled={isProcessing}
+          style={{ padding: '5px', margin: '5px 0' }}
         />
         <textarea
           placeholder="Descrição (ex.: Mensalidade)"
           value={descricao}
           onChange={(e) => setDescricao(e.target.value)}
           disabled={isProcessing}
-          style={{ margin: '5px 0', height: '60px' }}
+          style={{ padding: '5px', margin: '5px 0', height: '60px' }}
         />
-        <button type="submit" disabled={isProcessing} style={{ margin: '5px 0' }}>
+        <button type="submit" disabled={isProcessing} style={{ padding: '5px', margin: '5px 0' }}>
           {isProcessing ? 'Processando...' : 'Emitir Notas'}
         </button>
       </form>
