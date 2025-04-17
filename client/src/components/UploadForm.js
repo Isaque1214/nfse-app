@@ -37,10 +37,10 @@ function UploadForm() {
       const workbook = XLSX.read(event.target.result, { type: 'binary' });
       const sheet = workbook.Sheets[workbook.SheetNames[0]];
       const jsonData = XLSX.utils.sheet_to_json(sheet);
-      // Renomear "Pagamento em" para "dataFatoGerador" para uso interno
+      // Renomear "Pago em" para "dataFatoGerador" para uso interno
       const processedData = jsonData.map(row => ({
         ...row,
-        dataFatoGerador: row['Pagamento em']
+        dataFatoGerador: row['Pago em']
       }));
       setData(processedData);
     };
@@ -85,7 +85,7 @@ function UploadForm() {
             <th>Responsável</th>
             <th>CPF</th>
             <th>Valor</th>
-            <th>Pagamento em</th>
+            <th>Pago em</th>
             <th>Cidade</th>
           </tr>
         </thead>
