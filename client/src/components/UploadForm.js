@@ -19,7 +19,6 @@ function UploadForm() {
   const handleAnexoChange = (e) => {
     const selectedAnexo = e.target.value;
     setAnexo(selectedAnexo);
-    // Mapeamento de anexo para alíquota (ajuste conforme necessário)
     const aliquotaMap = {
       'I': '2',
       'II': '3',
@@ -38,7 +37,12 @@ function UploadForm() {
       const workbook = XLSX.read(event.target.result, { type: 'binary' });
       const sheet = workbook.Sheets[workbook.SheetNames[0]];
       const jsonData = XLSX.utils.sheet_to_json(sheet);
-      setData(jsonData);
+      // Renomear "Pagamento em" para "dataFatoGerador" para uso interno
+      const processedData = jsonData.map(row => ({
+        ...row,
+        dataFatoGerador: row['Pagamento em']
+      }));
+      setData(processedData);
     };
     reader.readAsBinaryString(file);
   };
@@ -57,6 +61,8 @@ function UploadForm() {
     formData.append('codigoServico', codigoServico);
     formData.append('anexo', anexo);
     formData.append('aliquota', aliquota);
+    // Enviar dados da planilha como JSON
+    formData.append('dadosPlanilha', JSON.stringify(data));
 
     try {
       const response = await axios.post('/api/processar-nota', formData);
@@ -79,7 +85,7 @@ function UploadForm() {
             <th>Responsável</th>
             <th>CPF</th>
             <th>Valor</th>
-            <th>Data</th>
+            <th>Pagamento em</th>
             <th>Cidade</th>
           </tr>
         </thead>
@@ -90,7 +96,7 @@ function UploadForm() {
               <td>{row['Nome do Responsável']}</td>
               <td>{row['CPF do responsável']}</td>
               <td>{row.Valor}</td>
-              <td>{row.Data}</td>
+              <td>{row.dataFatoGerador}</td>
               <td>{row.Cidade}</td>
             </tr>
           ))}
